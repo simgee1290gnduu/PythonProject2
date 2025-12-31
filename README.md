@@ -25,7 +25,15 @@ Model, doğrusal olmayan karmaşık ilişkileri öğrenebilmek için çok katman
 | **Gizli 2** | Dense | 32 Nöron + BatchNormalization | ReLU |
 | **Gizli 3** | Dense | 16 Nöron | ReLU |
 | **Çıkış** | Dense | 1 Nöron (Sınıflandırma) | Sigmoid |
+### 🧠 Derin Öğrenme Mimarisi
+Model, karmaşık paternleri yakalayabilmek için şu katman yapısıyla tasarlanmıştır:
 
+| Katman | İşlem | Aktivasyon | Açıklama |
+| :--- | :--- | :--- | :--- |
+| **Giriş** | Dense (8) | ReLU | Veri setindeki 8 temel tıbbi parametre. |
+| **Gizli 1** | Dense (64) | ReLU | BatchNormalization ile normalize edilmiştir. |
+| **Gizli 2** | Dense (32) | ReLU | Dropout (%30) ile aşırı öğrenme engellenmiştir. |
+| **Çıkış** | Dense (1) | Sigmoid | 0-1 arası diyabet olasılık skoru. |
 ### Uygulanan Teknik Detaylar:
 * **Backpropagation:** Hataların minimize edilmesi için geri yayılım algoritması kullanılmıştır.
 * **Optimization:** Hızlı yakınsama için **Adam Optimizer** (LR: 0.001) tercih edilmiştir.
@@ -46,7 +54,13 @@ Test verileri üzerinde elde edilen detaylı performans sonuçları:
 * **Kesinlik (Precision):** %65.50 (Pozitif tahminlerin doğruluğu)
 * **Duyarlılık (Recall):** %62.00 (Gerçek hastaları yakalama oranı)
 * **ROC-AUC Skoru:** 0.80+ (Modelin sınıfları birbirinden ayırma gücü)
-
+![Accuracy](https://img.shields.io/badge/Accuracy-74%25-green)
+![Loss](https://img.shields.io/badge/Loss-Binary_Crossentropy-blue)
+![Framework](https://img.shields.io/badge/Framework-TensorFlow_2.x-orange)
+## 🚀 Gelecek Geliştirmeler (Roadmap)
+- [ ] Modelin **Streamlit** kullanılarak bir web arayüzüne taşınması.
+- [ ] Farklı hiperparametre kombinasyonlarıyla **GridSearch** yapılması.
+- [ ] Veri setine sentetik veri üretimi (SMOTE) eklenerek sınıf dengesizliğinin giderilmesi.
 ## 🛠️ 5. Kurulum ve Kullanım
 Projeyi yerel makinenizde çalıştırmak için:
 
