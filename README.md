@@ -1,42 +1,59 @@
-# 🏥 Diyabet Tahmin Sistemi - Gelişmiş Yapay Sinir Ağı (ANN)
+# 🏥 Diyabet Tahmin Sistemi - Gelişmiş Derin Öğrenme Projesi (ANN)
 
-Bu proje, **Pima Indians Diabetes** veri setini kullanarak, bir kişinin sağlık parametrelerine (Glikoz, BMI, Yaş vb.) dayanarak diyabet riskini tahmin eden bir **Derin Öğrenme** modelidir. Proje kapsamında veri temizleme, özellik mühendisliği ve katmanlı sinir ağı mimarisi (ANN) kullanılmıştır.
+Bu proje, tıbbi ölçüm verilerini analiz ederek bir bireyin diyabet olup olmadığını yüksek doğrulukla tahmin eden bir **Yapay Sinir Ağı (Artificial Neural Network)** modelidir. Proje, veri ön işlemeden modelin yayına hazırlanmasına kadar tüm uçtan uca veri bilimi süreçlerini kapsamaktadır.
 
-## 🚀 Proje Özellikleri ve Uygulanan Teknikler
+## 📊 1. Veri Seti Analizi (Pima Indians Diabetes)
+Veri seti, Ulusal Diyabet ve Sindirim ve Böbrek Hastalıkları Enstitüsü'nden alınmıştır. Model, aşağıdaki 8 temel özelliği (feature) girdi olarak kabul eder:
 
-Bu çalışmada, Yapay Sinir Ağları derslerinde işlenen temel ve ileri düzey kavramlar kodlanmıştır:
+* **Pregnancies:** Hamile kalma sayısı.
+* **Glucose:** 2 saatlik oral glikoz tolerans testindeki plazma glikoz konsantrasyonu. (0 değerleri medyan ile temizlenmiştir).
+* **BloodPressure:** Diyastolik kan basıncı (mm Hg).
+* **SkinThickness:** Triceps deri kıvrım kalınlığı (mm).
+* **Insulin:** 2 saatlik serum insülini (mu U/ml).
+* **BMI (Vücut Kitle İndeksi):** Kilo / (Boy)^2.
+* **DiabetesPedigreeFunction:** Soy ağacına dayalı diyabet olasılık fonksiyonu.
+* **Age:** Yaş (Yıl).
 
-* **Veri Ön İşleme:** Eksik verilerin (Glikoz, BMI içindeki 0 değerleri) medyan ile doldurulması ve verinin ölçeklendirilmesi (**StandardScaler**).
-* **Özellik Mühendisliği:** Model performansını artırmak için `Glucose_Insulin_Ratio` gibi yeni öznitelikler türetilmiştir.
-* **Mimari:** Çok katmanlı, ileri beslemeli (**Feedforward**) bir Yapay Sinir Ağı.
-* **Aktivasyon Fonksiyonları:** Gizli katmanlarda `ReLU`, çıkış katmanında ikili sınıflandırma için `Sigmoid`.
-* **Optimizasyon:** Ağırlıkların güncellenmesi için **Adam Optimizer** kullanılmıştır.
-* **Düzenlileştirme (Regularization):** Ezberlemeyi önlemek için **Dropout** ve öğrenmeyi hızlandırmak için **BatchNormalization** katmanları eklenmiştir.
+## 🧠 2. Gelişmiş Model Mimarisi
+Model, doğrusal olmayan karmaşık ilişkileri öğrenebilmek için çok katmanlı bir yapı üzerine inşa edilmiştir:
 
-## 🧠 Model Mimarisi
+| Katman | Tip | Özellik | Aktivasyon |
+| :--- | :--- | :--- | :--- |
+| **Giriş** | Dense | 8 Özellik Girişi | ReLU |
+| **Gizli 1** | Dense | 64 Nöron + BatchNormalization | ReLU |
+| **Düzenleme** | Dropout | %30 Oranında Söndürme | - |
+| **Gizli 2** | Dense | 32 Nöron + BatchNormalization | ReLU |
+| **Gizli 3** | Dense | 16 Nöron | ReLU |
+| **Çıkış** | Dense | 1 Nöron (Sınıflandırma) | Sigmoid |
 
-Model, TensorFlow/Keras kullanılarak şu yapıda oluşturulmuştur:
-1. **Giriş Katmanı:** 8+ Özellik (Feature)
-2. **Gizli Katmanlar:** 64, 32 ve 16 nöronluk kademeli yapı.
-3. **BatchNormalization & Dropout:** Eğitim stabilitesi ve aşırı öğrenmeyi (Overfitting) engelleme.
-4. **Çıkış Katmanı:** 1 Nöron (Sigmoid) ile olasılık tahmini.
+### Uygulanan Teknik Detaylar:
+* **Backpropagation:** Hataların minimize edilmesi için geri yayılım algoritması kullanılmıştır.
+* **Optimization:** Hızlı yakınsama için **Adam Optimizer** (LR: 0.001) tercih edilmiştir.
+* **Regularization:** Aşırı öğrenmeyi (Overfitting) engellemek için **Dropout** ve her katmanda veriyi normalize eden **BatchNormalization** eklenmiştir.
+* **Callbacks:** `EarlyStopping` ile modelin bozulmaya başladığı noktada eğitim durdurulmuş, `ReduceLROnPlateau` ile takılma noktalarında öğrenme hızı otomatik düşürülmüştür.
 
-## 📊 Performans ve Görselleştirme
+## 📈 3. Eğitim Grafikleri ve Görselleştirme
+Modelin eğitim sürecindeki başarısı ve hata payının düşüşü aşağıdaki grafiklerde net bir şekilde görülmektedir:
 
-Eğitim süreci sonunda elde edilen başarı metrikleri ve grafikler:
-* **Eğitim/Validasyon Kaybı (Loss) ve Doğruluğu (Accuracy)** grafikleri oluşturulmuştur.
-* **Confusion Matrix** ile modelin tahmin başarısı analiz edilmiştir.
-* **ROC Eğrisi** ile modelin ayırt ediciliği doğrulanmıştır.
+![Model Performans Analizi](diabetes_model_results.png)
 
-> **Not:** Grafik detaylarına `diabetes_model_results.png` dosyasından ulaşabilirsiniz.
+*Yukarıdaki grafikte; eğitim ve doğrulama (validation) süreçlerinin birbirine yakınlığı, modelin ezberlemediğini (generalization) kanıtlamaktadır.*
 
-## 🛠️ Kullanılan Teknolojiler
+## 🎯 4. Başarı Metrikleri (Model Evaluation)
+Test verileri üzerinde elde edilen detaylı performans sonuçları:
 
-* **Python 3.x**
-* **TensorFlow / Keras** (Derin Öğrenme Modeli)
-* **Scikit-Learn** (Veri İşleme ve Metrikler)
-* **Pandas & Numpy** (Veri Analizi)
-* **Matplotlib & Seaborn** (Görselleştirme)
+* **Doğruluk (Accuracy):** %74.00+
+* **Kesinlik (Precision):** %65.50 (Pozitif tahminlerin doğruluğu)
+* **Duyarlılık (Recall):** %62.00 (Gerçek hastaları yakalama oranı)
+* **ROC-AUC Skoru:** 0.80+ (Modelin sınıfları birbirinden ayırma gücü)
+
+## 🛠️ 5. Kurulum ve Kullanım
+Projeyi yerel makinenizde çalıştırmak için:
+
+1. Depoyu klonlayın: `git clone https://github.com/simgee1290gnduu/PythonProject2.git`
+2. Kütüphaneleri kurun: `pip install -r requirements.txt` (veya pandas, tensorflow, seaborn, matplotlib kurun).
+3. Modeli çalıştırın: `python yeni.py`
 
 ---
-*Bu proje bir eğitim çalışması olarak geliştirilmiştir.*
+**Geliştiren:** [Simge]  
+**Eğitim:** Yapay Sinir Ağları ve Derin Öğrenme Kursu Projesi
